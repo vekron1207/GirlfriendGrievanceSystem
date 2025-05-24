@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', "django-insecure-20zvjo%ar1944i$vp3gva
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-# Railway will provide the correct host, but we'll allow all for now
+# Allowed hosts - include Railway domain and custom domain
 ALLOWED_HOSTS = [
     'girlfriendgrievancesystem-production.up.railway.app',
     'girlfriendgrievancesystem.com',
@@ -42,6 +42,15 @@ CSRF_TRUSTED_ORIGINS = [
     'https://girlfriendgrievancesystem.com',
     'https://www.girlfriendgrievancesystem.com',
 ]
+
+# Add Railway dynamic domains to trusted origins
+if 'RAILWAY_ENVIRONMENT' in os.environ:
+    CSRF_TRUSTED_ORIGINS.extend([
+        'https://*.up.railway.app',
+        'https://*.railway.app'
+    ])
+
+
 # Application definition
 
 INSTALLED_APPS = [
