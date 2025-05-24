@@ -36,7 +36,12 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-
+# CSRF Trusted Origins - Required for Railway deployment
+CSRF_TRUSTED_ORIGINS = [
+    'https://girlfriendgrievancesystem-production.up.railway.app',
+    'https://girlfriendgrievancesystem.com',
+    'https://www.girlfriendgrievancesystem.com',
+]
 # Application definition
 
 INSTALLED_APPS = [
