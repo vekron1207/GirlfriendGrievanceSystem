@@ -1,1 +1,2 @@
-web: python manage.py migrate --run-syncdb && gunicorn girlfriend_rating.wsgi --host 0.0.0.0 --port $PORT --log-file -
+web: gunicorn girlfriend_rating.wsgi --log-file -
+release: python manage.py migrate
