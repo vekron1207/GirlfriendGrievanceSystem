@@ -1,0 +1,816 @@
+<!-- core/templates/core/boyfriend_grievances.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grievances - Boyfriend Dashboard</title>
+    <style>
+        .edit-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+
+        .edit-severity-options,
+        .severity-option {
+            margin-bottom: 10px;
+        }
+
+        .severity-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .severity-option input {
+            margin-right: 8px;
+        }
+
+        .action-link {
+            color: var(--primary);
+            text-decoration: none;
+            margin-left: 10px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+
+        .edit-link {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+        }
+
+        .edit-link:hover {
+            background-color: #bbdefb;
+            text-decoration: none;
+        }
+
+        .delete-link {
+            background-color: #ffebee;
+            border: 1px solid #ffcdd2;
+        }
+
+        .delete-link:hover {
+            background-color: #ffcdd2;
+            text-decoration: none;
+        }
+
+        .save-link {
+            background-color: #e8f5e9;
+            border: 1px solid #a5d6a7;
+        }
+
+        .save-link:hover {
+            background-color: #c8e6c9;
+        }
+
+        .cancel-link {
+            background-color: #f5f5f5;
+            border: 1px solid #e0e0e0;
+        }
+
+        .cancel-link:hover {
+            background-color: #eeeeee;
+        }
+
+        .grievance-actions,
+        .resolution-actions {
+            margin-top: 15px;
+            text-align: right;
+        }
+
+        /* Blue theme for boyfriend pages */
+        :root {
+            --primary: #4a90e2;
+            --primary-dark: #357abd;
+            --light: #f0f8ff;
+            --text: #333;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5em;
+            margin: 0;
+            padding: 10px 0;
+        }
+
+        .header-link {
+            color: white;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .header-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .header-link:hover h1 {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .user-role {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .nav-link {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link span {
+            margin-left: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .page-title {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            margin: 0;
+            color: var(--primary-dark);
+        }
+
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        .rating-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .rating-section {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+
+        .rating-history {
+            margin-top: 30px;
+        }
+
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .rating-score {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+
+        .score-trend {
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .trend-up {
+            color: #28a745;
+        }
+
+        .trend-down {
+            color: #dc3545;
+        }
+
+        .rating-details {
+            flex: 1;
+        }
+
+        .rating-date {
+            color: #777;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .rating-snippet {
+            font-style: italic;
+            color: #555;
+        }
+
+        .no-ratings {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .partner-missing {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .partner-missing h2 {
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+
+        .partner-missing p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .logout-link {
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin-top: auto;
+            text-align: center;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .logout-link:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .rating-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Grievance specific styles */
+        .severity-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .severity-1 {
+            background-color: #f5f5f5;
+            border: 1px solid #e0e0e0;
+        }
+
+        .severity-2 {
+            background-color: #bbdefb;
+        }
+
+        .severity-3 {
+            background-color: #ffcc80;
+        }
+
+        .severity-4 {
+            background-color: #ef9a9a;
+        }
+
+        .severity-5 {
+            background-color: #424242;
+        }
+
+        .status-new {
+            background-color: #e3f2fd;
+            border-left: 4px solid var(--primary);
+        }
+
+        .status-viewed {
+            background-color: #e8f5e9;
+            border-left: 4px solid #66bb6a;
+        }
+
+        .status-resolved {
+            background-color: #f5f5f5;
+            border-left: 4px solid #9e9e9e;
+        }
+
+        .grievance-item {
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            position: relative;
+            /* Add padding-top to make room for the status badge */
+            padding-top: 35px;
+        }
+
+        .grievance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            /* Add margin-top to push content down */
+            margin-top: 10px;
+        }
+
+        .grievance-date {
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        .grievance-severity {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .grievance-content {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .grievance-status {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            z-index: 2;
+            /* Ensure it's above other elements */
+        }
+
+        .status-badge-new {
+            background-color: #e3f2fd;
+            color: var(--primary-dark);
+            border: 1px solid var(--primary);
+        }
+
+        .status-badge-viewed {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #66bb6a;
+        }
+
+        .status-badge-resolved {
+            background-color: #f5f5f5;
+            color: #757575;
+            border: 1px solid #9e9e9e;
+        }
+
+        .resolution-notes {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 3px solid #9e9e9e;
+        }
+
+        .resolution-form {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .resolution-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            min-height: 100px;
+            font-family: inherit;
+            margin-bottom: 10px;
+        }
+
+        .resolution-textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <!-- Same sidebar structure as boyfriend_dashboard.html -->
+        <div class="sidebar-header">
+            <a href="/boyfriend-dashboard/" class="header-link">
+                <h1>💙 Rating System</h1>
+            </a>
+        </div>
+
+        <div class="user-info">
+            <div class="user-avatar">{{ user.username|first|upper }}</div>
+            <div>
+                <div class="user-name">{{ user.username }}</div>
+                <div class="user-role">{{ user.role|title }}</div>
+            </div>
+        </div>
+
+        <ul class="nav-links">
+            <li>
+                <a href="/boyfriend-dashboard/" class="nav-link">
+                    <span>📊 Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/boyfriend-grievances/" class="nav-link active">
+                    <span>⚠️ Grievances</span>
+                </a>
+            </li>
+            <li>
+                <a href="/boyfriend-history/" class="nav-link">
+                    <span>📅 Rating History</span>
+                </a>
+            </li>
+            <li>
+                <a href="/boyfriend-settings/" class="nav-link">
+                    <span>⚙️ Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <a href="/logout/" class="logout-link">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <h1 class="page-title">Grievances from Your Girlfriend</h1>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if not partner %}
+        <div class="card partner-missing">
+            <h2>Link with Your Partner</h2>
+            <p>You need to connect with your girlfriend to view grievances.</p>
+            <a href="/link-partner/" class="btn">Link with Partner</a>
+        </div>
+        {% else %}
+        {% if grievances %}
+        {% for grievance in grievances %}
+        <div id="grievance-{{ grievance.id }}" class="grievance-item status-{{ grievance.status }}"">
+            <div class=" grievance-status status-badge-{{ grievance.status }}">
+            {% if grievance.status == 'new' %}New
+            {% elif grievance.status == 'viewed' %}Viewed
+            {% elif grievance.status == 'resolved' %}Resolved
+            {% endif %}
+        </div>
+
+        <div class="grievance-header">
+            <div class="grievance-date">{{ grievance.created_at|date:"F j, Y - g:i A" }}</div>
+            <div class="grievance-severity">
+                <span class="severity-indicator severity-{{ grievance.severity_level }}"></span>
+                Severity: {{ grievance.severity_level }}
+            </div>
+        </div>
+
+        <div class="grievance-content">
+            {{ grievance.message }}
+        </div>
+
+        <!-- Update the resolution display section with an edit button when a resolution exists -->
+        {% if grievance.status == 'resolved' and grievance.resolution_notes %}
+        <div class="resolution-notes">
+            <strong>Your Resolution:</strong>
+            <p id="resolution-text-{{ grievance.id }}">{{ grievance.resolution_notes }}</p>
+            <div class="resolution-actions">
+                <a href="#" onclick="toggleResolutionEdit({{ grievance.id }}); return false;"
+                    class="action-link edit-link">Edit Resolution</a>
+            </div>
+        </div>
+        {% elif grievance.status != 'resolved' %}
+        <div class="resolution-form" id="resolution-form-{{ grievance.id }}">
+            <div class="form-group">
+                <label for="resolution_notes_{{ grievance.id }}">How will you resolve this?</label>
+                <textarea id="resolution_notes_{{ grievance.id }}" class="resolution-textarea"
+                    placeholder="Explain how you will address this issue..."></textarea>
+            </div>
+            <button onclick="saveResolution({{ grievance.id }}); return false;">Mark as Resolved</button>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">No Grievances</h2>
+        </div>
+        <p>Your girlfriend hasn't submitted any grievances yet. Great job!</p>
+    </div>
+    {% endif %}
+    {% endif %}
+    </div>
+
+    <script>
+        // Function to toggle resolution edit mode
+        function toggleResolutionEdit(grievanceId) {
+            const resolutionText = document.getElementById(`resolution-text-${grievanceId}`);
+            const resolutionContent = resolutionText.innerText;
+            const resolutionActions = document.querySelector(`#grievance-${grievanceId} .resolution-actions`);
+
+            // If already in edit mode, cancel editing
+            if (resolutionText.classList.contains('editing')) {
+                resolutionText.innerHTML = resolutionText.getAttribute('data-original-text');
+                resolutionText.classList.remove('editing');
+                resolutionActions.innerHTML = `
+                <a href="#" onclick="toggleResolutionEdit(${grievanceId}); return false;" class="action-link edit-link">Edit Resolution</a>
+            `;
+                return;
+            }
+
+            // Store original content
+            resolutionText.setAttribute('data-original-text', resolutionContent);
+            resolutionText.classList.add('editing');
+
+            // Replace with textarea
+            resolutionText.innerHTML = `
+            <textarea id="edit-resolution-${grievanceId}" class="resolution-textarea">${resolutionContent}</textarea>
+        `;
+
+            // Change action buttons
+            resolutionActions.innerHTML = `
+            <a href="#" onclick="saveResolutionEdit(${grievanceId}); return false;" class="action-link save-link">Save</a>
+            <a href="#" onclick="toggleResolutionEdit(${grievanceId}); return false;" class="action-link cancel-link">Cancel</a>
+        `;
+        }
+
+        // Function to save a new resolution
+        function saveResolution(grievanceId) {
+            const resolutionNotes = document.getElementById(`resolution_notes_${grievanceId}`).value;
+
+            if (!resolutionNotes.trim()) {
+                alert('Please provide resolution notes.');
+                return;
+            }
+
+            fetch(`/resolve-grievance/${grievanceId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: `resolution_notes=${encodeURIComponent(resolutionNotes)}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the grievance item UI
+                        location.reload(); // For simplicity, just reload the page
+                        // Alternatively, you could update the UI dynamically here
+                    } else {
+                        showMessage('Failed to resolve grievance.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('An error occurred while resolving the grievance.', 'error');
+                });
+        }
+
+        // Function to save edited resolution
+        function saveResolutionEdit(grievanceId) {
+            const resolutionText = document.getElementById(`edit-resolution-${grievanceId}`).value;
+
+            if (!resolutionText.trim()) {
+                alert('Please provide resolution notes.');
+                return;
+            }
+
+            fetch(`/update-resolution/${grievanceId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: `resolution_notes=${encodeURIComponent(resolutionText)}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the resolution text
+                        const resolutionElement = document.getElementById(`resolution-text-${grievanceId}`);
+                        resolutionElement.innerHTML = resolutionText;
+                        resolutionElement.classList.remove('editing');
+
+                        // Reset action buttons
+                        const resolutionActions = document.querySelector(`#grievance-${grievanceId} .resolution-actions`);
+                        resolutionActions.innerHTML = `
+                    <a href="#" onclick="toggleResolutionEdit(${grievanceId}); return false;" class="action-link edit-link">Edit Resolution</a>
+                `;
+
+                        // Show success message
+                        showMessage('Resolution updated successfully!', 'success');
+                    } else {
+                        showMessage('Failed to update resolution.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('An error occurred while updating the resolution.', 'error');
+                });
+        }
+
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Show message function
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `alert alert-${type}`;
+            messageDiv.textContent = message;
+
+            const mainContent = document.querySelector('.main-content');
+            mainContent.insertBefore(messageDiv, mainContent.firstChild);
+
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

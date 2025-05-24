@@ -1,0 +1,118 @@
+<!-- core/templates/core/link_partner.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link with Partner - Girlfriend Rating System</title>
+    <style>
+        /* Copy the same styles from register.html for consistency */
+        body {
+            font-family: 'Comic Sans MS', 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe6ee 100%);
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50 L45 37 L37 45 L25 50 L37 55 L45 63 L50 50 L55 63 L63 55 L75 50 L63 45 L55 37 Z' fill='%23ffd1dc' fill-opacity='0.3'/%3E%3C/svg%3E");
+            color: #d14d72;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(209, 77, 114, 0.2);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255, 209, 220, 0.5);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0px rgba(255, 133, 162, 0.3);
+        }
+
+        .option-card {
+            background-color: rgba(255, 209, 220, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: #d14d72;
+            display: block;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 133, 162, 0.5);
+            box-shadow: 0 10px 20px rgba(209, 77, 114, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(to right, #ff85a2, #d14d72);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            display: block;
+            margin: 10px auto;
+            box-shadow: 0 5px 15px rgba(209, 77, 114, 0.3);
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+            width: fit-content;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(209, 77, 114, 0.4);
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>One More Step! 💖</h1>
+        <p style="text-align: center;">To use the Girlfriend Rating System, you need to connect with your partner.</p>
+
+        <a href="/generate-invitation/" class="option-card">
+            <h2>🎁 Create Invitation</h2>
+            <p>Generate an invitation code to send to your partner.</p>
+            <p><strong>Choose this if your partner hasn't registered yet.</strong></p>
+        </a>
+
+        <a href="/enter-invitation/" class="option-card">
+            <h2>🔑 Enter Invitation Code</h2>
+            <p>Enter the invitation code you received from your partner.</p>
+            <p><strong>Choose this if your partner has already sent you a code.</strong></p>
+        </a>
+
+        <a href="/skip-invitation/" class="btn">Skip for Now</a>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,157 @@
+<!-- core/templates/core/generate_invitation.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Invitation Code - Girlfriend Rating System</title>
+    <style>
+        /* Copy styles from link_partner.html */
+        /* ... */
+
+        .invitation-code {
+            background-color: #fff;
+            border: 2px dashed #ff85a2;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin: 30px 0;
+            color: #d14d72;
+        }
+
+        .copy-btn {
+            background-color: #fff;
+            border: 2px solid #ff85a2;
+            color: #ff85a2;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            background-color: #ff85a2;
+            color: white;
+        }
+
+        .copy-container {
+            text-align: center;
+        }
+
+        .copy-success {
+            color: #27ae60;
+            margin-top: 10px;
+            display: none;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0px rgba(255, 133, 162, 0.3);
+        }
+
+        .option-card {
+            background-color: rgba(255, 209, 220, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: #d14d72;
+            display: block;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 133, 162, 0.5);
+            box-shadow: 0 10px 20px rgba(209, 77, 114, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(to right, #ff85a2, #d14d72);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            display: block;
+            margin: 10px auto;
+            box-shadow: 0 5px 15px rgba(209, 77, 114, 0.3);
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+            width: fit-content;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(209, 77, 114, 0.4);
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Your Invitation Code 💌</h1>
+        <p style="text-align: center;">Share this code with your partner so they can connect with you:</p>
+
+        <div class="invitation-code" id="invitationCode">{{ invitation_code }}</div>
+
+        <div class="copy-container">
+            <button class="copy-btn" onclick="copyInvitationCode()">Copy to Clipboard</button>
+            <p class="copy-success" id="copySuccess">✓ Copied!</p>
+        </div>
+
+        <p style="text-align: center; margin-top: 30px;">
+            When your partner registers, they should select "Enter Invitation Code" and paste this code.
+        </p>
+
+        <a href="/dashboard/" class="btn">Continue to Dashboard</a>
+    </div>
+
+    <script>
+        function copyInvitationCode() {
+            const codeElement = document.getElementById('invitationCode');
+            const successElement = document.getElementById('copySuccess');
+
+            // Create temporary element
+            const tempElement = document.createElement('textarea');
+            tempElement.value = codeElement.innerText;
+            document.body.appendChild(tempElement);
+
+            // Select and copy
+            tempElement.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempElement);
+
+            // Show success message
+            successElement.style.display = 'block';
+            setTimeout(() => {
+                successElement.style.display = 'none';
+            }, 2000);
+        }
+    </script>
+</body>
+
+</html>

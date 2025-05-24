@@ -1,0 +1,509 @@
+<!-- core/templates/core/boyfriend_history.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - Boyfriend Rating System</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --primary-dark: #357abd;
+            --light: #f0f8ff;
+            --text: #333;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5em;
+            margin: 0;
+            padding: 10px 0;
+        }
+
+        .header-link {
+            color: white;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .header-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .header-link:hover h1 {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .user-role {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .nav-link {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link span {
+            margin-left: 10px;
+        }
+
+        .logout-link {
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin-top: auto;
+            text-align: center;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .logout-link:hover {
+            opacity: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .page-title {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--primary);
+            background-color: white;
+            color: var(--primary);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .timeline {
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--primary);
+            opacity: 0.3;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 80px;
+            opacity: 1;
+            transition: all 0.3s;
+        }
+
+        .timeline-item.hidden {
+            display: none;
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            z-index: 1;
+        }
+
+        .timeline-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .timeline-title {
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+
+        .timeline-date {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .timeline-text {
+            color: var(--text);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .timeline-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-submitted,
+        .status-received {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-edited {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-new {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .status-viewed {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-resolved {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .no-activities {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .timeline-item {
+                padding-left: 60px;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-icon {
+                left: 5px;
+                width: 25px;
+                height: 25px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="/boyfriend-dashboard/" class="header-link">
+                <h1>💙 Rating System</h1>
+            </a>
+        </div>
+
+        <div class="user-info">
+            <div class="user-avatar">{{ user.username|first|upper }}</div>
+            <div>
+                <div class="user-name">{{ user.username }}</div>
+                <div class="user-role">{{ user.role|title }}</div>
+            </div>
+        </div>
+
+        <ul class="nav-links">
+            <li>
+                <a href="/boyfriend-dashboard/" class="nav-link">
+                    <span>📊 Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/boyfriend-grievances/" class="nav-link">
+                    <span>⚠️ Grievances</span>
+                </a>
+            </li>
+            <li>
+                <a href="/boyfriend-history/" class="nav-link active">
+                    <span>📅 History</span>
+                </a>
+            </li>
+            <li>
+                <a href="/boyfriend-settings/" class="nav-link">
+                    <span>⚙️ Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <a href="/logout/" class="logout-link">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <h1 class="page-title">Your Relationship History</h1>
+
+        {% if not partner %}
+        <div class="no-activities">
+            <h2>Link with Your Partner</h2>
+            <p>You need to connect with your girlfriend to view history.</p>
+            <a href="/link-partner/" class="btn">Link with Partner</a>
+        </div>
+        {% else %}
+        <!-- Summary Statistics -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.total_activities }}</div>
+                <div class="stat-label">Total Activities</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.total_ratings }}</div>
+                <div class="stat-label">Ratings Received</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.total_logs }}</div>
+                <div class="stat-label">Daily Logs About You</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.total_grievances }}</div>
+                <div class="stat-label">Grievances Filed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.avg_rating|default:"-" }}</div>
+                <div class="stat-label">Your Avg Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.pending_grievances }}</div>
+                <div class="stat-label">Pending Issues</div>
+            </div>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterTimeline('all')">All Activities</button>
+            <button class="filter-btn" onclick="filterTimeline('rating')">📊 Ratings</button>
+            <button class="filter-btn" onclick="filterTimeline('log')">📝 Daily Logs</button>
+            <button class="filter-btn" onclick="filterTimeline('grievance')">⚠️ Grievances</button>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline">
+            {% if activities %}
+            {% for activity in activities %}
+            <div class="timeline-item" data-type="{{ activity.type }}">
+                <div class="timeline-icon">{{ activity.icon }}</div>
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <div class="timeline-title">
+                            {{ activity.title }}
+                            {% if activity.type == 'grievance' %}
+                            {{ activity.severity }}
+                            {% endif %}
+                        </div>
+                        <div class="timeline-date">{{ activity.date|date:"M j, Y - g:i A" }}</div>
+                    </div>
+                    <div class="timeline-text">{{ activity.content }}</div>
+                    <span class="timeline-status status-{{ activity.status }}">
+                        {% if activity.type == 'grievance' %}
+                        {% if activity.status == 'new' %}Needs Attention{% elif activity.status == 'viewed'
+                        %}Acknowledged{% else %}{{ activity.status|title }}{% endif %}
+                        {% else %}
+                        {{ activity.status|title }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="no-activities">
+                <p>No activities yet. Your girlfriend needs to submit ratings, logs, or grievances to see history here!
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function filterTimeline(type) {
+            const items = document.querySelectorAll('.timeline-item');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            // Update active button
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide timeline items
+            items.forEach(item => {
+                if (type === 'all' || item.dataset.type === type) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

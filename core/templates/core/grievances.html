@@ -1,0 +1,873 @@
+<!-- core/templates/core/grievances.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grievances - Girlfriend Rating System</title>
+    <style>
+        :root {
+            --primary: #ff85a2;
+            --primary-dark: #d14d72;
+            --light: #fff0f5;
+            --text: #333;
+            --sidebar-width: 250px;
+        }
+
+        /* Basic Layout */
+        body {
+            font-family: 'Comic Sans MS', 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Status Background Colors - FIXED */
+        .grievance-item.status-new {
+            background-color: #fffde7 !important;
+            border-left: 4px solid #fbc02d;
+        }
+
+        .grievance-item.status-viewed {
+            background-color: #e8f5e9 !important;
+            border-left: 4px solid #66bb6a;
+        }
+
+        .grievance-item.status-resolved {
+            background-color: #f0f8f0 !important;
+            border-left: 4px solid #4caf50;
+        }
+
+        /* Edit Mode Severity Options - HORIZONTAL */
+        .edit-severity-options {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .edit-severity-options .severity-option {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: white;
+            border-radius: 15px;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .edit-severity-options .severity-option:hover {
+            border-color: var(--primary);
+            background-color: rgba(255, 133, 162, 0.1);
+        }
+
+        .edit-severity-options .severity-option input {
+            margin-right: 6px;
+        }
+
+        .edit-severity-options .severity-option label {
+            cursor: pointer;
+            font-size: 0.85em;
+            margin: 0;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5em;
+            margin: 0;
+            padding: 10px 0;
+        }
+
+        .header-link {
+            color: white;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .header-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .header-link:hover h1 {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .user-role {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        /* Navigation */
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .nav-link {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link span {
+            margin-left: 10px;
+        }
+
+        .logout-link {
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin-top: auto;
+            text-align: center;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .logout-link:hover {
+            opacity: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .page-title {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary-dark);
+        }
+
+        /* Cards and Forms */
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            margin: 0;
+            color: var(--primary-dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(209, 77, 114, 0.3);
+        }
+
+        /* Severity Options (Form) */
+        .severity-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .severity-option {
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+        }
+
+        .severity-option input {
+            margin-right: 10px;
+        }
+
+        .severity-option label {
+            cursor: pointer;
+            font-size: 0.95em;
+        }
+
+        /* Grievance Items */
+        .grievance-item {
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            position: relative;
+            padding-top: 35px;
+        }
+
+        .grievance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        .grievance-date {
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        .grievance-severity {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .grievance-content {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        /* Status Badges */
+        .grievance-status {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            z-index: 2;
+        }
+
+        .status-badge-new {
+            background-color: #fffde7;
+            color: #f57f17;
+            border: 1px solid #fbc02d;
+        }
+
+        .status-badge-viewed {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #66bb6a;
+        }
+
+        .status-badge-resolved {
+            background-color: #f5f5f5;
+            color: #757575;
+            border: 1px solid #9e9e9e;
+        }
+
+        /* Status Background Colors */
+        .status-new {
+            background-color: #fffde7;
+            border-left: 4px solid #fbc02d;
+        }
+
+        .status-viewed {
+            background-color: #e8f5e9;
+            border-left: 4px solid #66bb6a;
+        }
+
+        .status-resolved {
+            background-color: #f5f5f5;
+            border-left: 4px solid #9e9e9e;
+        }
+
+        /* Severity Indicators */
+        .severity-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .severity-1 {
+            background-color: #f5f5f5;
+            border: 1px solid #e0e0e0;
+        }
+
+        .severity-2 {
+            background-color: #bbdefb;
+        }
+
+        .severity-3 {
+            background-color: #ffcc80;
+        }
+
+        .severity-4 {
+            background-color: #ef9a9a;
+        }
+
+        .severity-5 {
+            background-color: #424242;
+        }
+
+        /* Resolution Notes */
+        .resolution-notes {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 3px solid #9e9e9e;
+        }
+
+        /* Action Buttons */
+        .grievance-actions {
+            margin-top: 15px;
+            text-align: right;
+        }
+
+        .action-link {
+            color: var(--primary);
+            text-decoration: none;
+            margin-left: 10px;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .edit-link {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+        }
+
+        .edit-link:hover {
+            background-color: #bbdefb;
+            text-decoration: none;
+        }
+
+        .delete-link {
+            background-color: #ffebee;
+            border: 1px solid #ffcdd2;
+        }
+
+        .delete-link:hover {
+            background-color: #ffcdd2;
+            text-decoration: none;
+        }
+
+        .save-link {
+            background-color: #e8f5e9;
+            border: 1px solid #a5d6a7;
+        }
+
+        .save-link:hover {
+            background-color: #c8e6c9;
+        }
+
+        .cancel-link {
+            background-color: #f5f5f5;
+            border: 1px solid #e0e0e0;
+        }
+
+        .cancel-link:hover {
+            background-color: #eeeeee;
+        }
+
+        /* Edit Mode */
+        .edit-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* Partner Missing */
+        .partner-missing {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .partner-missing h2 {
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+
+        .partner-missing p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .grievance-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <!-- Same sidebar structure from other pages -->
+        <div class="sidebar-header">
+            <a href="/girlfriend-dashboard/" class="header-link">
+                <h1>💕 Rating System</h1>
+            </a>
+        </div>
+
+        <div class="user-info">
+            <div class="user-avatar">{{ user.username|first|upper }}</div>
+            <div>
+                <div class="user-name">{{ user.username }}</div>
+                <div class="user-role">{{ user.role|title }}</div>
+            </div>
+        </div>
+
+        <ul class="nav-links">
+            <li>
+                <a href="/girlfriend-dashboard/" class="nav-link">
+                    <span>📊 Monthly Rating</span>
+                </a>
+            </li>
+            <li>
+                <a href="/daily-logs/" class="nav-link">
+                    <span>📝 Daily Logs</span>
+                </a>
+            </li>
+            <li>
+                <a href="/grievances/" class="nav-link active">
+                    <span>⚠️ Grievances</span>
+                </a>
+            </li>
+            <li>
+                <a href="/girlfriend-history/" class="nav-link">
+                    <span>📅 History</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link">
+                    <span>⚙️ Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <a href="/logout/" class="logout-link">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <h1 class="page-title">Relationship Grievances</h1>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if not partner %}
+        <div class="card partner-missing">
+            <h2>Link with Your Partner</h2>
+            <p>You need to connect with your boyfriend before you can log grievances.</p>
+            <a href="/link-partner/" class="btn">Link with Partner</a>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Submit a Grievance</h2>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_message">Describe your grievance:</label>
+                    {{ form.message }}
+                </div>
+
+                <div class="form-group">
+                    <label>How serious is this issue?</label>
+                    <div class="severity-options"> <!-- Changed from mood-options to severity-options -->
+                        {% for value, text in form.severity_level.field.choices %}
+                        <div class="severity-option"> <!-- Changed from mood-option to severity-option -->
+                            <input type="radio" name="severity_level" id="severity_{{ value }}" value="{{ value }}">
+                            <label for="severity_{{ value }}">{{ text }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit">Submit Grievance</button>
+            </form>
+        </div>
+
+        <div class="grievances-list">
+            <h2>Your Grievances</h2>
+
+            {% if grievances %}
+            {% for grievance in grievances %}
+            <div id="grievance-{{ grievance.id }}" class="grievance-item status-{{ grievance.status }}">
+                <div class="grievance-status status-badge-{{ grievance.status }}">
+                    {% if grievance.status == 'new' %}New
+                    {% elif grievance.status == 'viewed' %}Viewed
+                    {% elif grievance.status == 'resolved' %}Resolved
+                    {% endif %}
+                </div>
+
+                <div class="grievance-header">
+                    <div class="grievance-date">{{ grievance.created_at|date:"F j, Y - g:i A" }}</div>
+                    <div class="grievance-severity">
+                        <span class="severity-indicator severity-{{ grievance.severity_level }}"></span>
+                        Severity: {{ grievance.severity_level }}
+                    </div>
+                </div>
+
+                <div class="grievance-content">
+                    {{ grievance.message }}
+                </div>
+
+                {% if grievance.status == 'resolved' and grievance.resolution_notes %}
+                <div class="resolution-notes">
+                    <strong>Resolution:</strong>
+                    <p>{{ grievance.resolution_notes }}</p>
+                </div>
+                {% endif %}
+
+                <div class="grievance-actions">
+                    <a href="#" onclick="toggleEditMode({{ grievance.id }}); return false;"
+                        class="action-link edit-link">Edit</a>
+                    <a href="#" onclick="deleteGrievance({{ grievance.id }}); return false;"
+                        class="action-link delete-link">Delete</a>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p>You haven't submitted any grievances yet.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <script>
+            // Function to toggle edit mode for a grievance
+            function toggleEditMode(grievanceId) {
+                const grievanceItem = document.getElementById(`grievance-${grievanceId}`);
+                const grievanceContent = grievanceItem.querySelector('.grievance-content');
+                const grievanceText = grievanceContent.innerText.trim();
+                const severityContainer = grievanceItem.querySelector('.grievance-severity');
+                const actionButtons = grievanceItem.querySelector('.grievance-actions');
+
+                // If already in edit mode, cancel editing
+                if (grievanceItem.classList.contains('editing')) {
+                    grievanceItem.classList.remove('editing');
+                    grievanceContent.innerHTML = grievanceItem.getAttribute('data-original-text');
+                    severityContainer.innerHTML = grievanceItem.getAttribute('data-original-severity');
+                    actionButtons.innerHTML = `
+                <a href="#" onclick="toggleEditMode(${grievanceId}); return false;" class="action-link edit-link">Edit</a>
+                <a href="#" onclick="deleteGrievance(${grievanceId}); return false;" class="action-link delete-link">Delete</a>
+            `;
+                    return;
+                }
+
+                // Store original content
+                grievanceItem.setAttribute('data-original-text', grievanceContent.innerHTML);
+                grievanceItem.setAttribute('data-original-severity', severityContainer.innerHTML);
+
+                // Create the edit form
+                grievanceItem.classList.add('editing');
+
+                // Get the current severity
+                let currentSeverity = severityContainer.innerText.replace('Severity: ', '').trim();
+
+                // Replace with textarea and severity options
+                grievanceContent.innerHTML = `
+            <textarea id="edit-grievance-text-${grievanceId}" class="edit-textarea">${grievanceText}</textarea>
+        `;
+
+                severityContainer.innerHTML = `
+            <div class="edit-severity-options">
+                <div class="severity-option">
+                    <input type="radio" name="edit-severity-${grievanceId}" id="edit-severity-1-${grievanceId}" value="1" ${currentSeverity === '1' ? 'checked' : ''}>
+                    <label for="edit-severity-1-${grievanceId}">⚪ Minor issue - Just mentioning it</label>
+                </div>
+                <div class="severity-option">
+                    <input type="radio" name="edit-severity-${grievanceId}" id="edit-severity-2-${grievanceId}" value="2" ${currentSeverity === '2' ? 'checked' : ''}>
+                    <label for="edit-severity-2-${grievanceId}">🔵 Moderate - Please address this</label>
+                </div>
+                <div class="severity-option">
+                    <input type="radio" name="edit-severity-${grievanceId}" id="edit-severity-3-${grievanceId}" value="3" ${currentSeverity === '3' ? 'checked' : ''}>
+                    <label for="edit-severity-3-${grievanceId}">🟠 Important - Needs attention soon</label>
+                </div>
+                <div class="severity-option">
+                    <input type="radio" name="edit-severity-${grievanceId}" id="edit-severity-4-${grievanceId}" value="4" ${currentSeverity === '4' ? 'checked' : ''}>
+                    <label for="edit-severity-4-${grievanceId}">🔴 Urgent - Requires immediate attention</label>
+                </div>
+                <div class="severity-option">
+                    <input type="radio" name="edit-severity-${grievanceId}" id="edit-severity-5-${grievanceId}" value="5" ${currentSeverity === '5' ? 'checked' : ''}>
+                    <label for="edit-severity-5-${grievanceId}">⚫ Critical - Relationship threatening</label>
+                </div>
+            </div>
+        `;
+
+                // Change action buttons
+                actionButtons.innerHTML = `
+            <a href="#" onclick="saveGrievance(${grievanceId}); return false;" class="action-link save-link">Save</a>
+            <a href="#" onclick="toggleEditMode(${grievanceId}); return false;" class="action-link cancel-link">Cancel</a>
+        `;
+            }
+
+            // Function to save the edited grievance
+            function saveGrievance(grievanceId) {
+                const grievanceItem = document.getElementById(`grievance-${grievanceId}`);
+                const grievanceText = document.getElementById(`edit-grievance-text-${grievanceId}`).value;
+                const severityRadios = document.getElementsByName(`edit-severity-${grievanceId}`);
+                let severity = '';
+
+                for (let i = 0; i < severityRadios.length; i++) {
+                    if (severityRadios[i].checked) {
+                        severity = severityRadios[i].value;
+                        break;
+                    }
+                }
+
+                // Send the update to the server via fetch
+                fetch(`/save-grievance/${grievanceId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: `message=${encodeURIComponent(grievanceText)}&severity_level=${encodeURIComponent(severity)}`
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update the grievance item
+                            const severityContainer = grievanceItem.querySelector('.grievance-severity');
+                            const grievanceContent = grievanceItem.querySelector('.grievance-content');
+
+                            severityContainer.innerHTML = `
+                    <span class="severity-indicator severity-${severity}"></span>
+                    Severity: ${severity}
+                `;
+
+                            grievanceContent.innerHTML = grievanceText;
+
+                            // Reset the action buttons
+                            const actionButtons = grievanceItem.querySelector('.grievance-actions');
+                            actionButtons.innerHTML = `
+                    <a href="#" onclick="toggleEditMode(${grievanceId}); return false;" class="action-link edit-link">Edit</a>
+                    <a href="#" onclick="deleteGrievance(${grievanceId}); return false;" class="action-link delete-link">Delete</a>
+                `;
+
+                            // Remove editing class
+                            grievanceItem.classList.remove('editing');
+
+                            // Show success message
+                            showMessage('Grievance updated successfully!', 'success');
+                        } else {
+                            showMessage('Failed to update grievance.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showMessage('An error occurred while updating the grievance.', 'error');
+                    });
+            }
+
+            // Function to delete a grievance
+            function deleteGrievance(grievanceId) {
+                if (confirm('Are you sure you want to delete this grievance?')) {
+                    fetch(`/delete-grievance/${grievanceId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Remove the grievance item from the DOM
+                                const grievanceItem = document.getElementById(`grievance-${grievanceId}`);
+                                grievanceItem.remove();
+
+                                // Show success message
+                                showMessage('Grievance deleted successfully!', 'success');
+                            } else {
+                                showMessage('Failed to delete grievance.', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showMessage('An error occurred while deleting the grievance.', 'error');
+                        });
+                }
+            }
+
+            // Helper function to get CSRF token
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            // Show message function
+            function showMessage(message, type) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `alert alert-${type}`;
+                messageDiv.textContent = message;
+
+                const mainContent = document.querySelector('.main-content');
+                mainContent.insertBefore(messageDiv, mainContent.firstChild);
+
+                // Auto-remove after 3 seconds
+                setTimeout(() => {
+                    messageDiv.remove();
+                }, 3000);
+            }
+        </script>
+</body>
+
+</html>

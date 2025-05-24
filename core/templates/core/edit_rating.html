@@ -1,0 +1,384 @@
+<!-- core/templates/core/edit_rating.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Rating - Girlfriend Rating System</title>
+    <!-- Copy the same CSS from girlfriend_dashboard.html -->
+    <style>
+        :root {
+            --primary: #ff85a2;
+            --primary-dark: #d14d72;
+            --light: #fff0f5;
+            --text: #333;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5em;
+            margin: 0;
+            padding: 10px 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .user-role {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .nav-link {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link span {
+            margin-left: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .page-title {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            margin: 0;
+            color: var(--primary-dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        textarea,
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        textarea:focus,
+        input[type="number"]:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(209, 77, 114, 0.3);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .rating-scale {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.8em;
+            color: #777;
+        }
+
+        .rating-history {
+            margin-top: 30px;
+        }
+
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .rating-score {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+
+        .rating-details {
+            flex: 1;
+        }
+
+        .rating-date {
+            color: #777;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .partner-missing {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .partner-missing h2 {
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+
+        .partner-missing p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .logout-link {
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin-top: auto;
+            text-align: center;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .logout-link:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        .warning-text {
+            color: #e74c3c;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <!-- Copy sidebar from girlfriend_dashboard.html -->
+        <!-- ... -->
+    </div>
+
+    <div class="main-content">
+        <h1 class="page-title">Edit Rating</h1>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Edit Rating for {{ rating.month|date:"F Y" }}</h2>
+            </div>
+
+            <p class="warning-text">⚠️ Note: You can only edit this rating once. After saving, further edits won't be
+                possible.</p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_positives">What did your boyfriend do well this month?</label>
+                    {{ form.positives }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_negatives">What could your boyfriend improve on?</label>
+                    {{ form.negatives }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_overall_score">Overall Score: <span id="rating-value">ra </span>/10</label>
+                    <input type="range" id="id_overall_score" name="overall_score" min="1" max="10" value="5"
+                        list="rating-values" style="width: 100%;"
+                        oninput="document.getElementById('rating-value').innerText = this.value">
+                    <datalist id="rating-values">
+                        <option value="1"></option>
+                        <option value="2"></option>
+                        <option value="3"></option>
+                        <option value="4"></option>
+                        <option value="5"></option>
+                        <option value="6"></option>
+                        <option value="7"></option>
+                        <option value="8"></option>
+                        <option value="9"></option>
+                        <option value="10"></option>
+                    </datalist>
+                    <div class="rating-scale">
+                        <span>1 - Poor</span>
+                        <span>5 - Average</span>
+                        <span>10 - Excellent</span>
+                    </div>
+
+                    <div class="buttons">
+                        <button type="submit">Save Changes</button>
+                        <a href="/girlfriend-dashboard/" class="btn-secondary">Cancel</a>
+                    </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Update rating value display when slider moves
+        const slider = document.querySelector('.rating-slider');
+        const ratingValue = document.getElementById('rating-value');
+
+        // Set the initial value
+        if (slider) {
+            ratingValue.textContent = slider.value;
+
+            // Update when slider changes
+            slider.addEventListener('input', function () {
+                ratingValue.textContent = this.value;
+            });
+        }
+    </script>
+</body>
+
+</html>

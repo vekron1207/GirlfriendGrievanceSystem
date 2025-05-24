@@ -1,0 +1,821 @@
+<!-- core/templates/core/boyfriend_settings.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Boyfriend Rating System</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --primary-dark: #357abd;
+            --light: #f0f8ff;
+            --text: #333;
+            --sidebar-width: 250px;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5em;
+            margin: 0;
+            padding: 10px 0;
+        }
+
+        .header-link {
+            color: white;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .header-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .header-link:hover h1 {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .user-role {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .nav-link {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link span {
+            margin-left: 10px;
+        }
+
+        .logout-link {
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin-top: auto;
+            text-align: center;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .logout-link:hover {
+            opacity: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            max-width: 1200px;
+        }
+
+        .page-title {
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .settings-section {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        /* FIXED: Only apply hover transform when modal is NOT open */
+        .settings-section:hover:not(.modal-open) {
+            transform: translateY(-2px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .section-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .relationship-status {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .relationship-status h3 {
+            margin: 0 0 10px 0;
+            color: white;
+        }
+
+        .partner-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .partner-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .danger-zone {
+            border: 2px solid var(--danger);
+            border-radius: 15px;
+            padding: 20px;
+            background-color: #fff5f5;
+        }
+
+        .danger-zone h3 {
+            color: var(--danger);
+            margin-top: 0;
+        }
+
+        .confirmation-input {
+            margin: 15px 0;
+        }
+
+        .single-section {
+            grid-column: 1 / -1;
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        /* FIXED: Only apply hover transform when modal is NOT open */
+        .single-section:hover:not(.modal-open) {
+            transform: translateY(-2px);
+        }
+
+        /* COMPLETELY FIXED MODAL CSS */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 500px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: center;
+            z-index: 10001;
+        }
+
+        /* Ensure modal content stays in place regardless of any parent effects */
+        .modal-content * {
+            position: relative;
+        }
+
+        .modal-content h3 {
+            color: var(--danger);
+            margin-bottom: 20px;
+        }
+
+        .modal-content label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: border-color 0.2s ease;
+            text-align: left;
+        }
+
+        .modal-content label:hover {
+            border-color: var(--primary);
+        }
+
+        .modal-content input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .modal-content input[type="radio"]:checked+div {
+            color: var(--primary);
+        }
+
+        .modal-content label:has(input[type="radio"]:checked) {
+            border-color: var(--primary);
+            background-color: rgba(74, 144, 226, 0.05);
+        }
+
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        /* Prevent body scroll when modal is open */
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="/boyfriend-dashboard/" class="header-link">
+                <h1>💙 Rating System</h1>
+            </a>
+        </div>
+
+        <div class="user-info">
+            <div class="user-avatar">{{ user.username|first|upper }}</div>
+            <div>
+                <div class="user-name">{{ user.username }}</div>
+                <div class="user-role">{{ user.role|title }}</div>
+            </div>
+        </div>
+
+        <ul class="nav-links">
+            <li>
+                <a href="/boyfriend-dashboard/" class="nav-link">
+                    <span>📊 Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/boyfriend-grievances/" class="nav-link">
+                    <span>⚠️ Grievances</span>
+                </a>
+            </li>
+            <li>
+                <a href="/boyfriend-history/" class="nav-link">
+                    <span>📅 History</span>
+                </a>
+            </li>
+            <li>
+                <a href="/boyfriend-settings/" class="nav-link active">
+                    <span>⚙️ Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <a href="/logout/" class="logout-link">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <h1 class="page-title">Account Settings</h1>
+
+        {% if success_message %}
+        <div class="alert alert-success">
+            ✅ {{ success_message }}
+        </div>
+        {% endif %}
+
+        {% if error_message %}
+        <div class="alert alert-error">
+            ❌ {{ error_message }}
+        </div>
+        {% endif %}
+
+        <div class="settings-grid">
+            <!-- Profile Settings -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <div class="section-icon">👤</div>
+                    <h2 class="section-title">Profile Information</h2>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_profile">
+
+                    <div class="form-group">
+                        <label class="form-label" for="first_name">First Name</label>
+                        <input type="text" id="first_name" name="first_name" class="form-input"
+                            value="{{ user.first_name|default:'' }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="last_name">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" class="form-input"
+                            value="{{ user.last_name|default:'' }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="username">Username</label>
+                        <input type="text" id="username" name="username" class="form-input" value="{{ user.username }}"
+                            required>
+                    </div>
+
+                    <button type="submit" class="btn">Update Profile</button>
+                </form>
+            </div>
+
+            <!-- Password Settings -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <div class="section-icon">🔒</div>
+                    <h2 class="section-title">Change Password</h2>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_password">
+
+                    <div class="form-group">
+                        <label class="form-label" for="current_password">Current Password</label>
+                        <input type="password" id="current_password" name="current_password" class="form-input"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="new_password">New Password</label>
+                        <input type="password" id="new_password" name="new_password" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="confirm_password">Confirm New Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-input"
+                            required>
+                    </div>
+
+                    <button type="submit" class="btn">Change Password</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Relationship Management -->
+        <div class="settings-section single-section">
+            <div class="section-header">
+                <div class="section-icon">💙</div>
+                <h2 class="section-title">Relationship Management</h2>
+            </div>
+
+            {% if partner %}
+            <div class="relationship-status">
+                <h3>Currently in a relationship with</h3>
+                <div class="partner-info">
+                    <div class="partner-avatar">{{ partner.username|first|upper }}</div>
+                    <div>
+                        <div style="font-size: 1.2em; font-weight: bold;">{{ partner.username }}</div>
+                        <div style="opacity: 0.8;">{{ partner.role|title }}</div>
+                    </div>
+                </div>
+
+                {% if relationship_stats %}
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">{{ relationship_stats.total_ratings }}</div>
+                        <div class="stat-label">Ratings Received</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ relationship_stats.total_logs }}</div>
+                        <div class="stat-label">Logs About You</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ relationship_stats.total_grievances }}</div>
+                        <div class="stat-label">Grievances Against You</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ relationship_stats.days_together }}</div>
+                        <div class="stat-label">Days Together</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Enhanced Breakup Section for Settings Templates -->
+            <div class="danger-zone">
+                <h3>⚠️ Danger Zone</h3>
+                <p>Breaking up will permanently end your current relationship. Choose what happens to your shared data:
+                </p>
+
+                <button type="button" class="btn btn-danger" onclick="showBreakupModal()">End Relationship</button>
+            </div>
+
+            {% else %}
+            <div style="text-align: center; padding: 40px;">
+                <h3>You're currently single 💙</h3>
+                <p>Enter your partner's invitation code to start a new relationship!</p>
+
+                <form method="post" style="max-width: 400px; margin: 0 auto;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="link_partner">
+
+                    <div class="form-group">
+                        <label class="form-label">Partner's Invitation Code</label>
+                        <input type="text" name="invitation_code" class="form-input" placeholder="Enter invitation code"
+                            required>
+                    </div>
+
+                    <button type="submit" class="btn">Link with Partner 💙</button>
+                </form>
+
+                <div style="margin-top: 30px;">
+                    <p><strong>Or generate your own invitation code:</strong></p>
+                    <a href="/generate-invitation/" class="btn">Generate Invitation Code</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Breakup Modal - moved outside main content -->
+    <div id="breakupModal" class="modal">
+        <div class="modal-content">
+            <h3>⚠️ End Relationship</h3>
+
+            <p>What would you like to do with your relationship data?</p>
+
+            <form method="post" id="breakupForm">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="break_up">
+
+                <!-- Data Options -->
+                <div style="text-align: left; margin: 20px 0;">
+                    <div style="margin-bottom: 15px;">
+                        <label>
+                            <input type="radio" name="data_action" value="keep" checked>
+                            <div>
+                                <strong>📦 Keep All Data</strong>
+                                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                                    Preserve your relationship history. If you get back together, everything
+                                    will still be here.
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label>
+                            <input type="radio" name="data_action" value="hide">
+                            <div>
+                                <strong>🗃️ Hide Data</strong>
+                                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                                    Hide all data from view but keep it stored. Can be restored if you reconnect
+                                    with the same partner.
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="border-color: #ffebee;">
+                            <input type="radio" name="data_action" value="delete">
+                            <div>
+                                <strong style="color: var(--danger);">🗑️ Delete Everything</strong>
+                                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                                    Permanently delete all ratings, logs, and grievances. This cannot be undone!
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Confirmation -->
+                <div style="margin: 20px 0;">
+                    <label class="form-label">Type "BREAK UP" to confirm:</label>
+                    <input type="text" name="break_up_confirmation" class="form-input" placeholder="BREAK UP" required>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn" onclick="closeBreakupModal()">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Confirm Breakup</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showBreakupModal() {
+            const modal = document.getElementById('breakupModal');
+            const body = document.body;
+
+            modal.style.display = 'block';
+            body.classList.add('modal-open');
+
+            // Add class to prevent hover effects on parent elements
+            document.querySelectorAll('.settings-section, .single-section').forEach(el => {
+                el.classList.add('modal-open');
+            });
+        }
+
+        function closeBreakupModal() {
+            const modal = document.getElementById('breakupModal');
+            const body = document.body;
+
+            modal.style.display = 'none';
+            body.classList.remove('modal-open');
+
+            // Remove class to restore hover effects
+            document.querySelectorAll('.settings-section, .single-section').forEach(el => {
+                el.classList.remove('modal-open');
+            });
+        }
+
+        // Close modal when clicking outside the modal content
+        window.onclick = function (event) {
+            const modal = document.getElementById('breakupModal');
+            if (event.target === modal) {
+                closeBreakupModal();
+            }
+        }
+
+        // Prevent closing when clicking inside modal content
+        document.querySelector('.modal-content').onclick = function (event) {
+            event.stopPropagation();
+        }
+
+        // Handle form submission
+        document.getElementById('breakupForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const confirmation = this.querySelector('input[name="break_up_confirmation"]').value;
+            if (confirmation !== 'BREAK UP') {
+                alert('Please type "BREAK UP" exactly to confirm.');
+                return;
+            }
+
+            const dataAction = this.querySelector('input[name="data_action"]:checked').value;
+            let confirmMessage = "Are you sure you want to end this relationship?\n\n";
+
+            if (dataAction === 'delete') {
+                confirmMessage += "⚠️ ALL DATA WILL BE PERMANENTLY DELETED! This includes all ratings, daily logs, and grievances. This action cannot be undone.";
+            } else if (dataAction === 'hide') {
+                confirmMessage += "Your data will be hidden but can be restored if you reconnect with the same partner.";
+            } else {
+                confirmMessage += "Your relationship history will be preserved in case you get back together.";
+            }
+
+            if (confirm(confirmMessage)) {
+                this.submit();
+            }
+        });
+
+        // Form validation for password change
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordForm = document.querySelector('form[action*="change_password"]');
+            if (passwordForm) {
+                const newPassword = document.getElementById('new_password');
+                const confirmPassword = document.getElementById('confirm_password');
+
+                function validatePasswords() {
+                    if (newPassword.value !== confirmPassword.value) {
+                        confirmPassword.setCustomValidity('Passwords do not match');
+                    } else {
+                        confirmPassword.setCustomValidity('');
+                    }
+                }
+
+                newPassword.addEventListener('input', validatePasswords);
+                confirmPassword.addEventListener('input', validatePasswords);
+            }
+        });
+    </script>
+</body>
+
+</html>

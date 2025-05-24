@@ -1,0 +1,537 @@
+<!-- core/templates/core/girlfriend_dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Girlfriend Dashboard - Rating System</title>
+    <style>
+        .editable-ratings {
+            margin-top: 15px;
+        }
+
+        .editable-rating {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .rating-month {
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .edit-btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .edit-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1em;
+            margin-left: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 133, 162, 0.1);
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        :root {
+            --primary: #ff85a2;
+            --primary-dark: #d14d72;
+            --light: #fff0f5;
+            --text: #333;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5em;
+            margin: 0;
+            padding: 10px 0;
+        }
+
+        .header-link {
+            color: white;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .header-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .header-link:hover h1 {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .user-role {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .nav-link {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link span {
+            margin-left: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .page-title {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            margin: 0;
+            color: var(--primary-dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        textarea,
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        textarea:focus,
+        input[type="number"]:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(209, 77, 114, 0.3);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .rating-scale {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.8em;
+            color: #777;
+        }
+
+        .rating-history {
+            margin-top: 30px;
+        }
+
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .rating-score {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+
+        .rating-details {
+            flex: 1;
+        }
+
+        .rating-date {
+            color: #777;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .partner-missing {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .partner-missing h2 {
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+
+        .partner-missing p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .logout-link {
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin-top: auto;
+            text-align: center;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .logout-link:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="/girlfriend-dashboard/" class="header-link">
+                <h1>💕 Rating System</h1>
+            </a>
+        </div>
+
+        <div class="user-info">
+            <div class="user-avatar">{{ user.username|first|upper }}</div>
+            <div>
+                <div class="user-name">{{ user.username }}</div>
+                <div class="user-role">{{ user.role|title }}</div>
+            </div>
+        </div>
+
+        <ul class="nav-links">
+            <li>
+                <a href="/girlfriend-dashboard/" class="nav-link active">
+                    <span>📊 Monthly Rating</span>
+                </a>
+            </li>
+            <li>
+                <a href="/daily-logs/" class="nav-link">
+                    <span>📝 Daily Logs</span>
+                </a>
+            <li>
+                <a href="/grievances/" class="nav-link">
+                    <span>📝 Grievances</span>
+                </a>
+            </li>
+            <li>
+                <a href="/girlfriend-history/" class="nav-link">
+                    <span>📅 History</span>
+                </a>
+            </li>
+            <li>
+                <a href="/girlfriend-settings/" class="nav-link">
+                    <span>⚙️ Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <a href="/logout/" class="logout-link">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <h1 class="page-title">Girlfriend Dashboard</h1>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if not partner %}
+        <div class="card partner-missing">
+            <h2>Link with Your Partner</h2>
+            <p>You need to connect with your boyfriend before you can start rating.</p>
+            <a href="/link-partner/" class="btn">Link with Partner</a>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Monthly Rating for {{ current_month }}</h2>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Daily Relationship Journal</h2>
+                </div>
+
+                <p>Record special moments, sweet gestures, or important events with your boyfriend on a daily basis.</p>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="/daily-logs/" class="btn" style="display: inline-block;">
+                        📝 Create Daily Log
+                    </a>
+                </div>
+            </div>
+
+            {% if existing_rating %}
+            <div class="alert alert-info">
+                You've already submitted your rating for this month. You can submit a new rating next month.
+            </div>
+            {% else %}
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_positives">What did your boyfriend do well this month?</label>
+                    {{ form.positives }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_negatives">What could your boyfriend improve on?</label>
+                    {{ form.negatives }}
+                </div>
+                <label for="id_overall_score">Overall Score: <span id="rating-value"> </span>/10</label>
+                <input type="range" id="id_overall_score" name="overall_score" min="1" max="10" value="5"
+                    list="rating-values" style="width: 100%;"
+                    oninput="document.getElementById('rating-value').innerText = this.value">
+                <datalist id="rating-values">
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                    <option value="4"></option>
+                    <option value="5"></option>
+                    <option value="6"></option>
+                    <option value="7"></option>
+                    <option value="8"></option>
+                    <option value="9"></option>
+                    <option value="10"></option>
+                </datalist>
+                <div class="rating-scale">
+                    <span>1 - Poor</span>
+                    <span>5 - Average</span>
+                    <span>10 - Excellent</span>
+                </div>
+
+
+                <button type="submit">Submit Rating</button>
+            </form>
+            {% endif %}
+        </div>
+
+        {% if rating_history %}
+        <div class="rating-history">
+            <h2>Your Previous Ratings</h2>
+
+            {% for rating in rating_history %}
+            <div class="card history-item">
+                <div class="rating-score">{{ rating.overall_score }}</div>
+                <div class="rating-details">
+                    <div class="rating-date">{{ rating.month|date:"F Y" }}</div>
+                    <div>{{ rating.positives|truncatechars:100 }}</div>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if editable_ratings %}
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Editable Ratings</h2>
+                </div>
+
+                <p>You can edit each rating once after submission:</p>
+
+                <div class="editable-ratings">
+                    {% for rating in editable_ratings %}
+                    <div class="editable-rating">
+                        <div class="rating-month">{{ rating.month|date:"F Y" }}</div>
+                        <div class="rating-score">{{ rating.overall_score }}/10</div>
+                        <a href="/edit-rating/{{ rating.id }}/" class="edit-btn">Edit Rating</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+</body>
+
+</html>
