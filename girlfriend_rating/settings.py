@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +22,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-20zvjo%ar1944i$vp3gva_0uw83mhi6i%%4+3n7vy^@)27606a"
+SECRET_KEY = os.environ.get('SECRET_KEY', "django-insecure-20zvjo%ar1944i$vp3gva_0uw83mhi6i%%4+3n7vy^@)27606a")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
+# Railway will provide the correct host, but we'll allow all for now
+ALLOWED_HOSTS = ['*'] if not DEBUG else ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -42,6 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # Add this for static files
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -73,25 +77,27 @@ WSGI_APPLICATION = "girlfriend_rating.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
-# girlfriend_rating/settings.py
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "girlfriend_rating",
-        "USER": "postgres",
-        "PASSWORD": "0000",
-        "HOST": "localhost",
-        "PORT": "5432",
+# Check if we're on Railway (production) or local development
+if 'DATABASE_URL' in os.environ:
+    # Railway production database
+    DATABASES = {
+        'default': dj_database_url.config(
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    # Local development database (your existing setup)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "girlfriend_rating",
+            "USER": "postgres",
+            "PASSWORD": "0000",
+            "HOST": "localhost",
+            "PORT": "5432",
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -128,6 +134,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -143,3 +150,11 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "your-email@gmail.com"  # Your email address
 EMAIL_HOST_PASSWORD = "your-app-password"  # App password (for Gmail)
 DEFAULT_FROM_EMAIL = "Girlfriend Rating System <your-email@gmail.com>"
+
+# Production security settings
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
