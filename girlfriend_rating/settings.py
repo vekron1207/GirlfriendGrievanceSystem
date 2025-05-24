@@ -63,6 +63,9 @@ INSTALLED_APPS = [
     "core",
 ]
 
+# Custom User Model
+AUTH_USER_MODEL = 'core.Users'
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",  # Add this for static files
@@ -118,6 +121,7 @@ else:
             "PORT": "5432",
         }
     }
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
