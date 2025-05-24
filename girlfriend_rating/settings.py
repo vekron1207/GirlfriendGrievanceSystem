@@ -28,7 +28,13 @@ SECRET_KEY = os.environ.get('SECRET_KEY', "django-insecure-20zvjo%ar1944i$vp3gva
 DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 # Railway will provide the correct host, but we'll allow all for now
-ALLOWED_HOSTS = ['*'] if not DEBUG else ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'girlfriendgrievancesystem-production.up.railway.app',
+    'girlfriendgrievancesystem.com',
+    'www.girlfriendgrievancesystem.com',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
